@@ -10,6 +10,7 @@ import java.net.URI
 import java.time.LocalDate
 
 @RestController
+@RequestMapping("v1/posts")
 class PostController {
 
     @Autowired
