@@ -1,6 +1,6 @@
 package com.pdpan0.blog.dto
 
-class GetResponseBodyDTO<T>(
+class GetResponseBodyDTO(
     val totalRows: Int?,
-    val response: T?
+    val response: Any?
 )

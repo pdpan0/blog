@@ -15,13 +15,13 @@ class PostController {
     lateinit var repository: PostRepository
 
     @GetMapping
-    fun getPosts(@RequestParam startDate: String, @RequestParam endDate: String): ResponseEntity<GetResponseBodyDTO<*>> {
+    fun getPosts(@RequestParam startDate: String, @RequestParam endDate: String): ResponseEntity<GetResponseBodyDTO> {
         var posts: List<Post>
 
         try {
             posts = repository.findByCreatedAtBetween(LocalDate.parse(startDate), LocalDate.parse(endDate))
         } catch (error: Exception) {
-            return ResponseEntity.internalServerError().body(GetResponseBodyDTO(null,error))
+            return ResponseEntity.internalServerError().body(GetResponseBodyDTO(null,error.message))
         }
 
         return if (posts.isEmpty()) ResponseEntity.noContent().build()
@@ -33,7 +33,7 @@ class PostController {
         = ResponseEntity.created(URI.create("")).body(ObjectIdDTO(repository.save(post).id))
 
     @PutMapping("/{postId}")
-    fun updatePost(@PathVariable("postId") postId: Int, @RequestBody(required = true) post: Post): ResponseEntity<GetResponseBodyDTO<*>> {
+    fun updatePost(@PathVariable("postId") postId: Int, @RequestBody(required = true) post: Post): ResponseEntity<GetResponseBodyDTO> {
         return try {
             if (repository.existsById(postId)) {
                 repository.save(post)
@@ -43,14 +43,13 @@ class PostController {
             }
         } catch (error: Exception) {
             ResponseEntity.internalServerError().body(GetResponseBodyDTO(
-                null,
-                error
+                null,error.message
             ))
         }
     }
 
     @DeleteMapping("/{postId}")
-    fun deletePost(@PathVariable("postId") postId: Int): ResponseEntity<GetResponseBodyDTO<*>> {
+    fun deletePost(@PathVariable("postId") postId: Int): ResponseEntity<GetResponseBodyDTO> {
         return try {
             if (repository.existsById(postId)) {
                 repository.deleteById(postId)
@@ -61,7 +60,7 @@ class PostController {
         } catch (error: Exception) {
             ResponseEntity.internalServerError().body(GetResponseBodyDTO(
                 null,
-                error
+                error.message
             ))
         }
     }
