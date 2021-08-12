@@ -1,29 +1,38 @@
 package com.pdpan0.blog
 
+import com.fasterxml.jackson.core.JsonEncoding
 import com.pdpan0.blog.dto.ErrorMessageDTO
 import com.pdpan0.blog.dto.GetResponseBodyDTO
 import com.pdpan0.blog.dto.ObjectIdDTO
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.net.URI
 import java.time.LocalDate
 
 @RestController
-@RequestMapping("v1/posts")
+@RequestMapping("v1/posts", produces = [MediaType.APPLICATION_JSON_VALUE])
 class PostController {
 
     @Autowired
     lateinit var repository: PostRepository
 
     @GetMapping
-    fun getPosts(@RequestParam startDate: String, @RequestParam endDate: String): ResponseEntity<GetResponseBodyDTO> {
+    fun getPosts(@RequestParam startDate: String, @RequestParam endDate: String): ResponseEntity<Any> {
         var posts: List<Post>
 
         try {
             posts = repository.findByCreatedAtBetween(LocalDate.parse(startDate), LocalDate.parse(endDate))
         } catch (error: Exception) {
-            return ResponseEntity.internalServerError().body(GetResponseBodyDTO(null,error.message))
+            return ResponseEntity.internalServerError()
+                .body(
+                    Json.encodeToString(ErrorMessageDTO(500,
+                    error.javaClass.simpleName,
+                    "Não foi possível realizar esta operação."
+                )))
         }
 
         return if (posts.isEmpty()) ResponseEntity.noContent().build()
@@ -36,12 +45,16 @@ class PostController {
             post.id = null
             ResponseEntity.created(URI.create("")).body(ObjectIdDTO(repository.save(post).id))
         } catch (error: Exception) {
-            ResponseEntity.internalServerError().body(error)
+            ResponseEntity.internalServerError().body(
+                ErrorMessageDTO(
+                    500,error.javaClass.canonicalName,"Não foi possível realizar esta operação."
+                )
+            )
         }
     }
 
     @PutMapping("/{postId}")
-    fun updatePost(@PathVariable("postId") postId: Int, @RequestBody(required = true) post: Post): ResponseEntity<GetResponseBodyDTO> {
+    fun updatePost(@PathVariable("postId") postId: Int, @RequestBody(required = true) post: Post): ResponseEntity<Any> {
         return try {
             if (repository.existsById(postId)) {
                 post.id = postId
@@ -51,14 +64,16 @@ class PostController {
                 ResponseEntity.notFound().build()
             }
         } catch (error: Exception) {
-            ResponseEntity.internalServerError().body(GetResponseBodyDTO(
-                null,error.message
-            ))
+            ResponseEntity.internalServerError().body(
+                ErrorMessageDTO(
+                    500,error.javaClass.canonicalName,"Não foi possível realizar esta operação.",postId
+                )
+            )
         }
     }
 
     @DeleteMapping("/{postId}")
-    fun deletePost(@PathVariable("postId") postId: Int): ResponseEntity<GetResponseBodyDTO> {
+    fun deletePost(@PathVariable("postId") postId: Int): ResponseEntity<Any> {
         return try {
             if (repository.existsById(postId)) {
                 repository.deleteById(postId)
@@ -67,10 +82,11 @@ class PostController {
                 ResponseEntity.notFound().build()
             }
         } catch (error: Exception) {
-            ResponseEntity.internalServerError().body(GetResponseBodyDTO(
-                null,
-                error.message
-            ))
+            ResponseEntity.internalServerError().body(
+                ErrorMessageDTO(
+                    500,error.javaClass.canonicalName,"Não foi possível realizar esta operação.", postId
+                )
+            )
         }
     }
 }
