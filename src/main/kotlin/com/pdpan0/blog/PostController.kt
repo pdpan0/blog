@@ -1,5 +1,6 @@
 package com.pdpan0.blog
 
+import com.pdpan0.blog.dto.ErrorMessageDTO
 import com.pdpan0.blog.dto.GetResponseBodyDTO
 import com.pdpan0.blog.dto.ObjectIdDTO
 import org.springframework.beans.factory.annotation.Autowired
@@ -29,13 +30,20 @@ class PostController {
     }
 
     @PostMapping
-    fun createPost(@RequestBody(required = true) post: Post): ResponseEntity<ObjectIdDTO>
-        = ResponseEntity.created(URI.create("")).body(ObjectIdDTO(repository.save(post).id))
+    fun createPost(@RequestBody(required = true) post: Post): ResponseEntity<Any> {
+        return try {
+            post.id = null
+            ResponseEntity.created(URI.create("")).body(ObjectIdDTO(repository.save(post).id))
+        } catch (error: Exception) {
+            ResponseEntity.internalServerError().body(error)
+        }
+    }
 
     @PutMapping("/{postId}")
     fun updatePost(@PathVariable("postId") postId: Int, @RequestBody(required = true) post: Post): ResponseEntity<GetResponseBodyDTO> {
         return try {
             if (repository.existsById(postId)) {
+                post.id = postId
                 repository.save(post)
                 ResponseEntity.ok().build()
             } else {

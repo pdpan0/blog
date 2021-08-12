@@ -9,10 +9,10 @@ import javax.persistence.Id
 @Entity
 data class Post(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        val id: Int?,
-        val title: String,
-        val description: String,
-        val body: String,
-        val createdAt: LocalDate,
-        val updatedAt: LocalDate
+    var id: Int?,
+    val title: String,
+    val description: String,
+    val body: String,
+    val createdAt: LocalDate,
+    val updatedAt: LocalDate
 )

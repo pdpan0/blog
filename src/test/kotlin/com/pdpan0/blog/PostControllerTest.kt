@@ -1,6 +1,7 @@
 package com.pdpan0.blog
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -50,17 +51,16 @@ internal class PostControllerTest {
                 .queryParam("endDate", "2021-08-30"))
         .andExpect(MockMvcResultMatchers.status().isOk)
         .andDo(MockMvcResultHandlers.print())
-    }
 
-    @Test
-    fun `test no content`() {
+        postRepository.deleteAll()
+
         mockMvc.perform(
             MockMvcRequestBuilders
                 .get("/")
                 .queryParam("startDate", "2021-08-01")
                 .queryParam("endDate", "2021-08-30"))
-        .andExpect(MockMvcResultMatchers.status().isNoContent)
-        .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().isNoContent)
+            .andDo(MockMvcResultHandlers.print())
     }
 
     @Test
@@ -90,6 +90,10 @@ internal class PostControllerTest {
                 .delete("/${postId}"))
             .andExpect(MockMvcResultMatchers.status().isNoContent)
             .andDo(MockMvcResultHandlers.print())
+
+        val findById = postRepository.existsById(postId!!)
+
+        Assertions.assertFalse(findById)
     }
 
     @Test
