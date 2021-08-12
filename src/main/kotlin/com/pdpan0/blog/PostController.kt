@@ -45,10 +45,12 @@ class PostController {
             post.id = null
             ResponseEntity.created(URI.create("")).body(ObjectIdDTO(repository.save(post).id))
         } catch (error: Exception) {
-            ResponseEntity.internalServerError().body(
-                ErrorMessageDTO(
-                    500,error.javaClass.canonicalName,"Não foi possível realizar esta operação."
-                )
+            ResponseEntity.internalServerError()
+                .body(
+                    Json.encodeToString(ErrorMessageDTO(500,
+                        error.javaClass.simpleName,
+                        "Não foi possível realizar esta operação."
+                    ))
             )
         }
     }
@@ -64,10 +66,12 @@ class PostController {
                 ResponseEntity.notFound().build()
             }
         } catch (error: Exception) {
-            ResponseEntity.internalServerError().body(
-                ErrorMessageDTO(
-                    500,error.javaClass.canonicalName,"Não foi possível realizar esta operação.",postId
-                )
+            ResponseEntity.internalServerError()
+                .body(
+                    Json.encodeToString(ErrorMessageDTO(500,
+                        error.javaClass.simpleName,
+                        "Não foi possível realizar esta operação."
+                    ))
             )
         }
     }
@@ -82,10 +86,12 @@ class PostController {
                 ResponseEntity.notFound().build()
             }
         } catch (error: Exception) {
-            ResponseEntity.internalServerError().body(
-                ErrorMessageDTO(
-                    500,error.javaClass.canonicalName,"Não foi possível realizar esta operação.", postId
-                )
+            ResponseEntity.internalServerError()
+                .body(
+                    Json.encodeToString(ErrorMessageDTO(500,
+                        error.javaClass.simpleName,
+                        "Não foi possível realizar esta operação."
+                    ))
             )
         }
     }
