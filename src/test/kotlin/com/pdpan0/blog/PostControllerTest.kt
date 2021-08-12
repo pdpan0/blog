@@ -46,7 +46,7 @@ internal class PostControllerTest {
 
         mockMvc.perform(
             MockMvcRequestBuilders
-                .get("/")
+                .get("/v1/posts")
                 .queryParam("startDate", "2021-08-01")
                 .queryParam("endDate", "2021-08-30"))
         .andExpect(MockMvcResultMatchers.status().isOk)
@@ -56,7 +56,7 @@ internal class PostControllerTest {
 
         mockMvc.perform(
             MockMvcRequestBuilders
-                .get("/")
+                .get("/v1/posts")
                 .queryParam("startDate", "2021-08-01")
                 .queryParam("endDate", "2021-08-30"))
             .andExpect(MockMvcResultMatchers.status().isNoContent)
@@ -72,7 +72,7 @@ internal class PostControllerTest {
         postRepository.deleteAll()
 
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/")
+            MockMvcRequestBuilders.post("/v1/posts")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json)
@@ -87,7 +87,7 @@ internal class PostControllerTest {
 
         mockMvc.perform(
             MockMvcRequestBuilders
-                .delete("/${postId}"))
+                .delete("/v1/posts/${postId}"))
             .andExpect(MockMvcResultMatchers.status().isNoContent)
             .andDo(MockMvcResultHandlers.print())
 
