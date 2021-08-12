@@ -1,17 +1,17 @@
 # VM BLOG
 Projeto de APIs para um Blog
 
-##APIs
+## APIs
 
 APIs para gerenciamento de postagens.
 
-####GET
+#### GET
 
 _/v1/posts_
 
 curl --location --request GET 'localhost:8080/?startDate=2021-01-01&endDate=2021-01-31'
 
-####POST
+#### POST
 
 _/v1/posts_
 
@@ -25,7 +25,7 @@ curl --location --request POST 'localhost:8080/' \
 "updatedAt": "2021-01-06"
 }'
 
-####PUT
+#### PUT
 
 _v1/posts/{postId}_
 
@@ -39,7 +39,7 @@ curl --location --request PUT 'localhost:8080/v1/posts/2' \
 "updatedAt": "2021-01-06"
 }'
 
-####DELETE
+#### DELETE
 
 _v1/posts/{postId}_
 
